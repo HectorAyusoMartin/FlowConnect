@@ -26,9 +26,13 @@ st.sidebar.info(
 
     -Backend: Los datos son servidos desde una API creada con FastAPI. Desplegada en Render.
     
+<<<<<<< HEAD
     -Frontend: Las visualizaciones interactivas son generadas en tiempo real utilizando Streamlit.
     
     
+=======
+    -Frontend: Las visualizaciones interactivas son generadas en tiempo real utilizando Streamli
+>>>>>>> fcb51667b5390ed5af4d16f2134ea2932d585dd5
 
     """
 )
