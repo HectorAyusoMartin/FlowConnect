@@ -75,20 +75,25 @@ transacciones = [
 
 
 def validar_fecha(fecha: str):
+    
     try:
         return datetime.strptime(fecha, "%Y-%m-%d")
+    
     except ValueError:
         raise HTTPException(status_code=400, detail=f"Formato de fecha inválido: {fecha}. Usa YYYY-MM-DD.")
 
 @aplicacion.get("/")
+
 def leer_raiz():
     return {"mensaje": "¡FlowConnect está funcionando!"}
 
 @aplicacion.get("/usuarios")
+
 def obtener_usuarios():
     return usuarios
 
 @aplicacion.get("/transacciones")
+
 def obtener_transacciones(
     id_usuario: Optional[int] = Query(None, description="Filtrar por ID de usuario"),
     fecha_inicio: Optional[str] = Query(None, description="Filtrar desde esta fecha (YYYY-MM-DD)"),
@@ -98,6 +103,7 @@ def obtener_transacciones(
 
     if id_usuario is not None:
         resultado = [t for t in resultado if t["id_usuario"] == id_usuario]
+        
         if not resultado:
             raise HTTPException(status_code=404, detail=f"No se encontraron transacciones para el usuario con ID {id_usuario}.")
 

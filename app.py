@@ -27,6 +27,8 @@ st.sidebar.info(
     -Backend: Los datos son servidos desde una API creada con FastAPI.
     
     -Frontend: Las visualizaciones interactivas son generadas en tiempo real utilizando Streamlit.
+    
+    -Despliegue:
 
     """
 )
@@ -87,7 +89,7 @@ if 'transacciones_df' in locals() and not transacciones_df.empty:
     fechas_min = transacciones_df["fecha"].min()
     fechas_max = transacciones_df["fecha"].max()
     rango_fechas = st.date_input(
-        "Selecciona el rango de fechas",
+        "Selecciona el rago de fechas",
         value=[pd.to_datetime(fechas_min), pd.to_datetime(fechas_max)],
         min_value=pd.to_datetime(fechas_min),
         max_value=pd.to_datetime(fechas_max)
@@ -105,7 +107,7 @@ if 'transacciones_df' in locals() and not transacciones_df.empty:
     # Selección de tipo de gráfico
     grafico_seleccionado = st.selectbox(
         "Selecciona el gráfico que quieres visualizar",
-        ["Monto total por usuario", "Número de transacciones por usuario", "Transacciones por fecha"]
+        ["monto total por usuario", "Número de transacciones por usuario", "Transacciones por fecha"]
     )
 
     # Generar gráficos según la selección
@@ -116,7 +118,7 @@ if 'transacciones_df' in locals() and not transacciones_df.empty:
             montos_por_usuario.plot(kind="bar", ax=ax, color="skyblue")
             ax.set_title("Monto total por usuario")
             ax.set_xlabel("ID de Usuario")
-            ax.set_ylabel("Monto Total (€)")
+            ax.set_ylabel("Monto Total")
             st.pyplot(fig)
 
         elif grafico_seleccionado == "Número de transacciones por usuario":
@@ -134,7 +136,7 @@ if 'transacciones_df' in locals() and not transacciones_df.empty:
             transacciones_por_fecha.plot(kind="line", ax=ax, marker="o", color="coral")
             ax.set_title("Transacciones por fecha")
             ax.set_xlabel("Fecha")
-            ax.set_ylabel("Monto Total (€)")
+            ax.set_ylabel("Monto Total ")
             st.pyplot(fig)
     else:
         st.warning("No hay datos para graficar con los filtros seleccionados.")
