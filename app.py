@@ -18,6 +18,35 @@ api_url = "http://127.0.0.1:8000"
 
 st.title("FlowConnect Visualización")
 
+
+st.sidebar.title("Acerca de FlowConnect")
+st.sidebar.info(
+    """
+    **FlowConnect** es un proyecto personal diseñado para aprender y demostrar habilidades en desarrollo backend y frontend.
+
+    - **Backend**: Los datos son servidos desde una API creada con [FastAPI](https://fastapi.tiangolo.com/), un framework moderno y eficiente.
+    - **Frontend**: Las visualizaciones interactivas son generadas en tiempo real utilizando [Streamlit](https://streamlit.io/).
+
+    """
+)
+
+st.sidebar.markdown("---")  # Línea divisoria
+
+st.sidebar.title("Sobre mí")
+st.sidebar.info(
+    """
+    **Nombre**: Héctor Ayuso Martín  
+    **Profesión**: Desarrollador Junior en Python y Java.  
+    **Ubicación**: Barcelona  
+
+    **Contacto**:  
+    - **Email**: hayusomartin@gmail.com  
+    - **GitHub**: https://github.com/HectorAyusoMartin
+    - **LinkedIn**: www.linkedin.com/in/hector-ayuso-martin
+    """
+)
+
+
 # Cargar usuarios
 st.subheader("Usuarios")
 try:
