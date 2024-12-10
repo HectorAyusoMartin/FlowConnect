@@ -11,7 +11,10 @@ Confifuracion de main.
 Nucelo de la API.
 '''
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
+from typing import Optional , List
+from datetime import datetime
+
 
 aplicacion = FastAPI()
 
@@ -56,5 +59,24 @@ def obtener_usuarios():
 #Endpoint para Lista de transacciones:
 
 @aplicacion.get('/transacciones')
-def obtener_transacciones():
-    return transacciones
+def obtener_transacciones(
+    id_usuario: Optional[int] = Query(None, description="Filtrar por ID de usuario"),
+    fecha_inicio: Optional[str] = Query(None, description="Filtrar desde esta fecha (YYYY-MM-DD)"),
+    fecha_fin: Optional[str] = Query(None, description="Filtrar hasta esta fecha (YYYY-MM-DD)")
+):
+    resultado: List[dict] = transacciones
+
+    # Filtros
+    if id_usuario is not None:
+        resultado = [t for t in resultado if t["id_usuario"] == id_usuario]
+
+    # Filtro fecha
+    if fecha_inicio:
+        fecha_inicio_dt = datetime.strptime(fecha_inicio, "%Y-%m-%d")
+        resultado = [t for t in resultado if datetime.strptime(t["fecha"], "%Y-%m-%d") >= fecha_inicio_dt]
+    
+    if fecha_fin:
+        fecha_fin_dt = datetime.strptime(fecha_fin, "%Y-%m-%d")
+        resultado = [t for t in resultado if datetime.strptime(t["fecha"], "%Y-%m-%d") <= fecha_fin_dt]
+
+    return resultado
