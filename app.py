@@ -22,10 +22,11 @@ st.title("FlowConnect Visualización")
 st.sidebar.title("Acerca de FlowConnect")
 st.sidebar.info(
     """
-    **FlowConnect** es un proyecto personal diseñado para aprender y demostrar habilidades en desarrollo backend y frontend.
+    FlowConnect es un proyecto personal diseñado para aprender y demostrar habilidades en desarrollo backend y frontend.
 
-    - **Backend**: Los datos son servidos desde una API creada con [FastAPI](https://fastapi.tiangolo.com/), un framework moderno y eficiente.
-    - **Frontend**: Las visualizaciones interactivas son generadas en tiempo real utilizando [Streamlit](https://streamlit.io/).
+    -Backend: Los datos son servidos desde una API creada con FastAPI.
+    
+    -Frontend: Las visualizaciones interactivas son generadas en tiempo real utilizando Streamlit.
 
     """
 )
@@ -35,14 +36,15 @@ st.sidebar.markdown("---")  # Línea divisoria
 st.sidebar.title("Sobre mí")
 st.sidebar.info(
     """
-    **Nombre**: Héctor Ayuso Martín  
-    **Profesión**: Desarrollador Junior en Python y Java.  
-    **Ubicación**: Barcelona  
+    Nombre: Héctor Ayuso Martín  
+    Desarrollador Junior en Python y Java.  
+    Ubicación: Barcelona  
 
-    **Contacto**:  
-    - **Email**: hayusomartin@gmail.com  
-    - **GitHub**: https://github.com/HectorAyusoMartin
-    - **LinkedIn**: www.linkedin.com/in/hector-ayuso-martin
+    Contacto:  
+    
+    -Email: hayusomartin@gmail.com  
+    -GitHub: https://github.com/HectorAyusoMartin
+    -LinkedIn: www.linkedin.com/in/hector-ayuso-martin
     """
 )
 
@@ -69,31 +71,75 @@ try:
 except requests.exceptions.RequestException as e:
     st.error(f"No se pudo cargar la lista de transacciones: {e}")
 
-# Opciones de visualización
-st.subheader("Opciones de Visualización")
+
+st.subheader("Gráficos Interactivos con Filtros")
+
+# Verifica que las transacciones estén disponibles
 if 'transacciones_df' in locals() and not transacciones_df.empty:
-    # Seleccionar tipo de gráfico
-    tipo_grafico = st.selectbox(
-        "Selecciona el tipo de gráfico",
-        ["Monto total por usuario", "Transacciones por fecha"]
+    # Selección de usuario
+    usuarios_unicos = transacciones_df["id_usuario"].unique()
+    usuario_seleccionado = st.selectbox(
+        "Selecciona un usuario para filtrar las transacciones",
+        options=["Todos"] + list(usuarios_unicos)
     )
 
-    if tipo_grafico == "Monto total por usuario":
-        montos_por_usuario = transacciones_df.groupby("id_usuario")["monto"].sum()
-        fig, ax = plt.subplots()
-        montos_por_usuario.plot(kind="bar", ax=ax)
-        ax.set_title("Monto total por usuario")
-        ax.set_xlabel("ID de Usuario")
-        ax.set_ylabel("Monto Total")
-        st.pyplot(fig)
+    # Selección de rango de fechas
+    fechas_min = transacciones_df["fecha"].min()
+    fechas_max = transacciones_df["fecha"].max()
+    rango_fechas = st.date_input(
+        "Selecciona el rango de fechas",
+        value=[pd.to_datetime(fechas_min), pd.to_datetime(fechas_max)],
+        min_value=pd.to_datetime(fechas_min),
+        max_value=pd.to_datetime(fechas_max)
+    )
 
-    elif tipo_grafico == "Transacciones por fecha":
-        transacciones_por_fecha = transacciones_df.groupby("fecha")["monto"].sum()
-        fig, ax = plt.subplots()
-        transacciones_por_fecha.plot(kind="line", ax=ax, marker='o')
-        ax.set_title("Transacciones por fecha")
-        ax.set_xlabel("Fecha")
-        ax.set_ylabel("Monto Total")
-        st.pyplot(fig)
+    # Filtrar datos según usuario y rango de fechas
+    datos_filtrados = transacciones_df.copy()
+    if usuario_seleccionado != "Todos":
+        datos_filtrados = datos_filtrados[datos_filtrados["id_usuario"] == usuario_seleccionado]
+    datos_filtrados = datos_filtrados[
+        (datos_filtrados["fecha"] >= rango_fechas[0].strftime("%Y-%m-%d")) &
+        (datos_filtrados["fecha"] <= rango_fechas[1].strftime("%Y-%m-%d"))
+    ]
+
+    # Selección de tipo de gráfico
+    grafico_seleccionado = st.selectbox(
+        "Selecciona el gráfico que quieres visualizar",
+        ["Monto total por usuario", "Número de transacciones por usuario", "Transacciones por fecha"]
+    )
+
+    # Generar gráficos según la selección
+    if not datos_filtrados.empty:
+        if grafico_seleccionado == "Monto total por usuario":
+            montos_por_usuario = datos_filtrados.groupby("id_usuario")["monto"].sum()
+            fig, ax = plt.subplots()
+            montos_por_usuario.plot(kind="bar", ax=ax, color="skyblue")
+            ax.set_title("Monto total por usuario")
+            ax.set_xlabel("ID de Usuario")
+            ax.set_ylabel("Monto Total (€)")
+            st.pyplot(fig)
+
+        elif grafico_seleccionado == "Número de transacciones por usuario":
+            transacciones_por_usuario = datos_filtrados["id_usuario"].value_counts()
+            fig, ax = plt.subplots()
+            transacciones_por_usuario.plot(kind="bar", ax=ax, color="lightgreen")
+            ax.set_title("Número de transacciones por usuario")
+            ax.set_xlabel("ID de Usuario")
+            ax.set_ylabel("Número de Transacciones")
+            st.pyplot(fig)
+
+        elif grafico_seleccionado == "Transacciones por fecha":
+            transacciones_por_fecha = datos_filtrados.groupby("fecha")["monto"].sum()
+            fig, ax = plt.subplots()
+            transacciones_por_fecha.plot(kind="line", ax=ax, marker="o", color="coral")
+            ax.set_title("Transacciones por fecha")
+            ax.set_xlabel("Fecha")
+            ax.set_ylabel("Monto Total (€)")
+            st.pyplot(fig)
+    else:
+        st.warning("No hay datos para graficar con los filtros seleccionados.")
 else:
     st.warning("No hay datos para graficar.")
+
+
+
