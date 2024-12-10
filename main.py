@@ -8,12 +8,13 @@
 
 '''
 Confifuracion de main.
-Nucelo de la API.
+Nucleo de la API.
 '''
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query , HTTPException
 from typing import Optional , List
 from datetime import datetime
+
 
 
 aplicacion = FastAPI()
@@ -31,9 +32,9 @@ usuarios = [
 
 transacciones = [
     
-{'id_transiccion' : 1 , 'id_usuario': 1 , 'monto': 150.99, 'fecha':'2024-12-10'},
-{'id_transiccion' : 2 , 'id_usuario': 2 , 'monto': 89.99, 'fecha':'2024-12-09'},
-{'id_transiccion' : 3 , 'id_usuario': 1 , 'monto': 45.50, 'fecha':'2024-12-08'},
+{'id_transaccion' : 1 , 'id_usuario': 1 , 'monto': 150.99, 'fecha':'2024-12-10'},
+{'id_transaccion' : 2 , 'id_usuario': 2 , 'monto': 89.99, 'fecha':'2024-12-09'},
+{'id_transaccion' : 3 , 'id_usuario': 1 , 'monto': 45.50, 'fecha':'2024-12-08'},
 
 
 
@@ -55,6 +56,8 @@ def leer_raiz():
 @aplicacion.get('/usuarios')
 def obtener_usuarios():
     return usuarios
+
+
 
 #Endpoint para Lista de transacciones:
 
@@ -80,3 +83,29 @@ def obtener_transacciones(
         resultado = [t for t in resultado if datetime.strptime(t["fecha"], "%Y-%m-%d") <= fecha_fin_dt]
 
     return resultado
+
+
+
+# Endpoint: Obtener un usuario por ID
+@aplicacion.get("/usuarios/{id_usuario}")
+def obtener_usuario_por_id(id_usuario: int):
+    for usuario in usuarios:
+        if usuario["id_usuario"] == id_usuario:
+            return usuario
+    # Si no se encuentra el usuario, lanzamos un error
+    raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+
+
+
+# Endpoint: Obtener una transacción por ID
+@aplicacion.get("/transacciones/{id_transaccion}")
+def obtener_transaccion_por_id(id_transaccion: int):
+    for transaccion in transacciones:
+        if transaccion["id_transaccion"] == id_transaccion:
+            return transaccion
+    # Si no se encuentra la transacción, lanzamos un error
+    raise HTTPException(status_code=404, detail="Transacción no encontrada")
+
+
+
