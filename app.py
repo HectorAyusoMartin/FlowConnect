@@ -14,7 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # URL base de la API
-api_url = "http://127.0.0.1:8000"
+api_url = "https://flowconnect.streamlit.app"
 
 st.title("FlowConnect Visualización")
 
